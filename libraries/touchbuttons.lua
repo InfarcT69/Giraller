@@ -9,6 +9,7 @@ function touchbuttons:newRectangleButton(x, y, w, h, buttonType)
     self.h = h
     self.isPressed = false
     self.type = buttonType
+    self.Returned = false
     self.shape = 'rectangle'
     if self.type ~= 'mouse' and self.type ~= 'touch' then error(self.type..' is not an existing type of button', 2) end
     return self
@@ -63,6 +64,7 @@ end
 function touchbuttons:checkPressed(mouseButton)
     local isButtonPressed = false
     --touchButton
+    local mouseX, mouseY = love.mouse.getPosition()
     if self.type == 'touch' then
         local touches = love.touch.getTouches()
         for i,v in ipairs(touches) do
@@ -90,7 +92,7 @@ function touchbuttons:checkPressed(mouseButton)
         end
   --MouseClickButton
     elseif self.type == 'mouse' then
-        mouseX, mouseY = love.mouse.getPosition()
+        
       --Check mouse click rectangle
         if self.shape == 'rectangle' then
             if mouseX <= self.x + self.w and
@@ -119,6 +121,59 @@ function touchbuttons:checkPressed(mouseButton)
         self.isPressed = false
     end
     return self.isPressed
+end
+
+function touchbuttons:checkPressedAR(mouseButton)
+    local isPressed = false
+    local isPressedAR = false
+
+    local mButton = mouseButton
+    local mouseX, mouseY = love.mouse.getPosition()
+
+
+    if self:checkPressed(mButton) then
+        isPressed = true
+
+    else
+        isPressed = false
+    end
+    
+
+    function love.mousereleased(x, y, button)
+
+        if button == mButton then
+
+            if isPressed == true then
+                if self.shape == 'rectangle' then
+                    if mouseX <= self.x + self.w and
+                    mouseX + 5 >= self.x and
+                    mouseY <= self.y + self.h and
+                    mouseY + 5 >= self.y then
+                        isPressedAR = true
+        
+                        
+                    else
+                        isPressedAR = false
+
+                    end
+                end 
+            else
+                isPressedAR = false
+                
+
+            end
+        end
+        if isPressedAR == true then
+            self.Returned = true
+
+        else
+            self.Returned = false
+        end
+
+    end
+
+    return self.Returned
+    
 end
 
 function touchbuttons:draw()
